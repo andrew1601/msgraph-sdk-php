@@ -18,6 +18,8 @@
 namespace Microsoft\Graph\Http;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleRetry\GuzzleRetryMiddleware;
 use GuzzleHttp\Exception\BadResponseException;
 use Microsoft\Graph\Core\GraphConstants;
 use Microsoft\Graph\Core\ExceptionWrapper;
@@ -537,11 +539,17 @@ class GraphRequest
     */
     protected function createGuzzleClient()
     {
+        $stack = HandlerStack::create();
+        $stack->push(GuzzleRetryMiddleware::factory());
+
         $clientSettings = [
             'base_uri' => $this->baseUrl,
             'http_errors' => $this->http_errors,
-            'headers' => $this->headers
+            'headers' => $this->headers,
+            'handler' => $stack,
+            'on_retry_callback' => function() { echo "Retrying request..."; },
         ];
+
         if ($this->proxyPort !== null) {
             $clientSettings['verify'] = $this->proxyVerifySSL;
             $clientSettings['proxy'] = $this->proxyPort;
