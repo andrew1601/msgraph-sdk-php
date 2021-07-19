@@ -340,12 +340,14 @@ class GraphRequest
             $result->getHeaders()
         );
 
+        $result->close();
         // If no return type is specified, return GraphResponse
         $returnObj = $response;
 
         if ($this->returnType) {
             $returnObj = $response->getResponseAsObject($this->returnType);
         }
+        
         return $returnObj;
     }
 
