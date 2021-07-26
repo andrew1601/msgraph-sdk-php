@@ -177,8 +177,8 @@ class GraphCollectionRequest extends GraphRequest
         if ($this->nextLink) {
             $this->endpoint = "/" . implode("/", array_slice(explode("/", $this->nextLink), 4));
         } else {
-            // This is the first request to the endpoint
-            if ($this->pageSize) {
+            if ($this->pageSize && !str_contains($this->endpoint, "$top=" . $this->pageSize)) {
+                // This is the first request to the endpoint
                 $this->endpoint .= $this->getConcatenator() . '$top=' . $this->pageSize;
             }
         }
